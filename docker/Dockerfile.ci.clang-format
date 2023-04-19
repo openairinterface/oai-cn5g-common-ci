@@ -35,4 +35,4 @@ RUN apt-get update && \
 WORKDIR /home
 COPY . .
 
-RUN /bin/bash -c "if [[ -v MERGE_REQUEST_CHECK ]]; then ./ci-scripts/checkCodingFormattingRules.sh --src-branch $SOURCE_BRANCH --target-branch $TARGET_BRANCH; else ./ci-scripts/checkCodingFormattingRules.sh; fi"
+RUN /bin/bash -c "if [[ -v MERGE_REQUEST_CHECK ]]; then ./ci-scripts/common/bash/checkCodingFormattingRules.sh --src-branch $SOURCE_BRANCH --target-branch $TARGET_BRANCH; else ./ci-scripts/common/bash/checkCodingFormattingRules.sh; fi"
