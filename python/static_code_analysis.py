@@ -45,6 +45,7 @@ def analyze_sca_log_check():
     if os.path.isfile(cwd + '/archives/cppcheck.xml'):
         nb_errors = 0
         nb_warnings = 0
+        fullDesc = False
         listOfErrors = []
         myError = CppCheckError()
         with open(f'{cwd}/archives/cppcheck.xml', 'r') as xmlfile:
@@ -56,13 +57,23 @@ def analyze_sca_log_check():
                 result = re.search('severity="(?P<severity>[a-z]+)" msg="(?P<message>.*)" verbose="', line)
                 if result is not None:
                     myError = CppCheckError()
+                    fullDesc = True
                     myError.severity=result.group('severity')
                     myError.message=result.group('message')
+                # Case with only one file
                 result = re.search('location file="(?P<filename>.*)" line="(?P<lineNb>[0-9]+)" column="', line)
-                if result is not None:
+                if result is not None and fullDesc:
                     myError.filename=result.group('filename')
                     myError.lineNb=result.group('lineNb')
                     listOfErrors.append(myError)
+                    fullDesc = False
+                # Case with two files
+                result = re.search('location file0=.* file="(?P<filename>.*)" line="(?P<lineNb>[0-9]+)" column="', line)
+                if result is not None and fullDesc:
+                    myError.filename=result.group('filename')
+                    myError.lineNb=result.group('lineNb')
+                    listOfErrors.append(myError)
+                    fullDesc = False
 
         if (nb_errors == 0) and (nb_warnings == 0):
             details += generate_chapter(chapterName, 'CPPCHECK found NO error and NO warning.', True)

@@ -266,9 +266,14 @@ def generate_cppcheck_table_footer():
 def generate_cppcheck_table_row(cppcheckErr):
     cwd = os.getcwd()
     row = ''
+    if cppcheckErr.severity == 'error':
+        severityColor = 'Tomato'
+    else:
+        severityColor = 'Orange'
     with open(os.path.join(cwd, CPPCHECK_TABLE_ROW_TEMPLATE), 'r') as temp:
         row = temp.read()
         row = re.sub('ERROR_TYPE', cppcheckErr.severity, row)
+        row = re.sub('SEVERITY_COLOR', severityColor, row)
         row = re.sub('ERROR_MESSAGE', cppcheckErr.message, row)
         row = re.sub('FILENAME', cppcheckErr.filename, row)
         row = re.sub('LINE_NUMBER', cppcheckErr.lineNb, row)
