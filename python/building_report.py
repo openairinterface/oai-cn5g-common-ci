@@ -233,6 +233,11 @@ def nf_base_image_creation(args, nfName):
                         messages[idx] += '\n   * yaml-cpp Installation: OK'
                     else:
                         messages[idx] += '\n   * yaml-cpp Installation: KO'
+                if status.cppjwtToBeInstalled:
+                    if status.cppjwtStatus:
+                        messages[idx] += '\n   * cpp-jwt Installation: OK'
+                    else:
+                        messages[idx] += '\n   * cpp-jwt Installation: KO'
                 if status.lttngToBeInstalled:
                     if status.lttngStatus:
                         messages[idx] += '\n   * lttng Installation: OK'
