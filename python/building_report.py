@@ -55,6 +55,8 @@ class InstallationStatus():
         self.yamlcppStatus=False
         self.lttngToBeInstalled=False
         self.lttngStatus=False
+        self.cppjwtToBeInstalled=False
+        self.cppjwtStatus=False
 
 class BuildStatus():
     def __init__(self):
@@ -182,6 +184,10 @@ def nf_base_image_creation(args, nfName):
                             status.yamlcppToBeInstalled = True
                         if re.search('yaml-cpp installation complete', line) is not None and status.yamlcppToBeInstalled:
                             status.yamlcppStatus = True
+                        if re.search('Starting to install cpp_jwt', line) is not None:
+                            status.cppjwtToBeInstalled = True
+                        if re.search('cpp_jwt installation complete', line) is not None and status.cppjwtToBeInstalled:
+                            status.cppjwtStatus = True
                         if re.search('Starting to install lttng', line) is not None:
                             status.lttngToBeInstalled = True
                         if re.search('lttng installation complete', line) is not None and status.lttngToBeInstalled:
