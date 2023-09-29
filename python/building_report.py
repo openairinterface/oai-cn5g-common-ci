@@ -57,6 +57,10 @@ class InstallationStatus():
         self.lttngStatus=False
         self.cppjwtToBeInstalled=False
         self.cppjwtStatus=False
+        self.libbpfToBeInstalled=False
+        self.libbpfStatus=False
+        self.bpftoolToBeInstalled=False
+        self.bpftoolStatus=False
 
 class BuildStatus():
     def __init__(self):
@@ -192,6 +196,14 @@ def nf_base_image_creation(args, nfName):
                             status.lttngToBeInstalled = True
                         if re.search('lttng installation complete', line) is not None and status.lttngToBeInstalled:
                             status.lttngStatus = True
+                        if re.search('Starting to install libbpf', line) is not None:
+                            status.libbpfToBeInstalled = True
+                        if re.search('libbpf installation complete', line) is not None and status.libbpfToBeInstalled:
+                            status.libbpfStatus = True
+                        if re.search('Starting to install bpftool', line) is not None:
+                            status.bpftoolToBeInstalled = True
+                        if re.search('bpftool installation complete', line) is not None and status.bpftoolToBeInstalled:
+                            status.bpftoolStatus = True
             if status.fStatus:
                 messages[idx] = f'OK:\n -- ./build_{nfName} --install-deps --force'
                 if status.isCached:
@@ -243,6 +255,16 @@ def nf_base_image_creation(args, nfName):
                         messages[idx] += '\n   * lttng Installation: OK'
                     else:
                         messages[idx] += '\n   * lttng Installation: KO'
+                if status.libbpfToBeInstalled:
+                    if status.libbpfStatus:
+                        messages[idx] += '\n   * libbpf Installation: OK'
+                    else:
+                        messages[idx] += '\n   * libbpf Installation: KO'
+                if status.bpftoolToBeInstalled:
+                    if status.bpftoolStatus:
+                        messages[idx] += '\n   * bpftool Installation: OK'
+                    else:
+                        messages[idx] += '\n   * bpftool Installation: KO'
         else:
             messages[idx] = f'KO:\n -- logfile ({logFileName}) not found'
         idx += 1
