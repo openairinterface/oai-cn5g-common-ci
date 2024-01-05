@@ -32,5 +32,6 @@ COPY . .
 RUN cppcheck --enable=warning --force \
       --xml --xml-version=2 \
       --suppressions-list=ci-scripts/cppcheck_suppressions.list src \
+      -j`nproc` \
       2> cppcheck.xml \
       1> cppcheck_build.log
