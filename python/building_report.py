@@ -88,7 +88,7 @@ def build_summary(args, nfName, ubuntuVersion, rhelVersion):
 def initial_base_preparation(args, nfName):
     cwd = os.getcwd()
     details = ''
-    variants = ['docker', 'podman']
+    variants = ['ubuntu', 'rhel']
     messages = ['', '']
     idx = 0
     for variant in variants:
@@ -128,7 +128,7 @@ def initial_base_preparation(args, nfName):
 def nf_base_image_creation(args, nfName):
     cwd = os.getcwd()
     details = ''
-    variants = ['docker', 'podman']
+    variants = ['ubuntu', 'rhel']
     messages = ['', '']
     idx = 0
     for variant in variants:
@@ -253,7 +253,7 @@ def nf_build_log_check(nfName):
     cwd = os.getcwd()
     details = ''
     extraDetails = ''
-    variants = ['docker', 'podman']
+    variants = ['ubuntu', 'rhel']
     messages = ['', '', '', '']
     idx = 0
     errorMessages = []
@@ -315,7 +315,7 @@ def nf_build_log_check(nfName):
 def nf_target_image_size(nfName):
     cwd = os.getcwd()
     details = ''
-    variants = ['docker', 'podman']
+    variants = ['ubuntu', 'rhel']
     messages = ['', '']
     idx = 0
     imagesStatus = True
@@ -324,12 +324,12 @@ def nf_target_image_size(nfName):
         if os.path.isfile(f'{cwd}/archives/{logFileName}'):
             status = False
             imageTag = 'notAcorrectTagForTheMoment'
-            if variant == 'docker':
+            if variant == 'ubuntu':
                 section_start_pattern = f'naming to docker.io/library/oai-{nfName}:'
-                section_end_pattern = f'OAI-{nfName.upper()} DOCKER IMAGE BUILD'
+                section_end_pattern = f'OAI-{nfName.upper()} UBUNTU IMAGE BUILD'
             else:
-                section_start_pattern = f'COMMIT oai-{nfName}:'
-                section_end_pattern = f'OAI-{nfName.upper()} PODMAN RHEL8 IMAGE BUILD'
+                section_start_pattern = f'COMMIT temp.builder.openshift.io/oaicicd-core/{nfName}'
+                section_end_pattern = f'OAI-{nfName.upper()} RHEL IMAGE BUILD'
             section_status = False
             with open(f'{cwd}/archives/{logFileName}', 'r') as logfile:
                 for line in logfile:
@@ -346,9 +346,14 @@ def nf_target_image_size(nfName):
                             result = re.search('ago  *([0-9A-Z ]+)', line)
                             if result is not None:
                                 size = result.group(1)
-                                if variant == 'docker':
+                                if variant == 'ubuntu':
                                     size = re.sub('MB', ' MB', size)
                                 status = True
+                        result = re.search('Image Size:\\t*([0-9\.]+)MB', line)
+                        if result is not None and not status:
+                            fSize = float(result.group(1)) * 2.6
+                            size = f'~ {fSize:.1f} MB'
+                            status = True
             if status:
                 messages[idx] = f'OK: {size}'
             else:
