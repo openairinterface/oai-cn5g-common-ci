@@ -53,6 +53,8 @@ class InstallationStatus():
         self.pistacheStatus=False
         self.yamlcppToBeInstalled=False
         self.yamlcppStatus=False
+        self.cprToBeInstalled=False
+        self.cprStatus=False
         self.lttngToBeInstalled=False
         self.lttngStatus=False
         self.cppjwtToBeInstalled=False
@@ -188,6 +190,10 @@ def nf_base_image_creation(args, nfName):
                             status.yamlcppToBeInstalled = True
                         if re.search('yaml-cpp installation complete', line) is not None and status.yamlcppToBeInstalled:
                             status.yamlcppStatus = True
+                        if re.search('Starting to install cpr', line) is not None:
+                            status.cprToBeInstalled = True
+                        if re.search('cpr installation complete', line) is not None and status.cprToBeInstalled:
+                            status.cprStatus = True
                         if re.search('Starting to install cpp_jwt', line) is not None:
                             status.cppjwtToBeInstalled = True
                         if re.search('cpp_jwt installation complete', line) is not None and status.cppjwtToBeInstalled:
@@ -265,6 +271,11 @@ def nf_base_image_creation(args, nfName):
                         messages[idx] += '\n   * bpftool Installation: OK'
                     else:
                         messages[idx] += '\n   * bpftool Installation: KO'
+                if status.cprToBeInstalled:
+                    if status.cprStatus:
+                        messages[idx] += '\n   * libcpr Installation: OK'
+                    else:
+                        messages[idx] += '\n   * libcpr Installation: KO'
         else:
             messages[idx] = f'KO:\n -- logfile ({logFileName}) not found'
         idx += 1
