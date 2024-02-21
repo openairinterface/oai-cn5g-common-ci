@@ -61,6 +61,8 @@ class InstallationStatus():
         self.libbpfStatus=False
         self.bpftoolToBeInstalled=False
         self.bpftoolStatus=False
+        self.swigToBeInstalled=False
+        self.swigStatus=False
 
 class BuildStatus():
     def __init__(self):
@@ -101,7 +103,7 @@ def initial_base_preparation(args, nfName):
             status = False
             isCached = False
             section_status = True
-            section_end_pattern = f'RUN ./build_{nfName} --install-deps --force'
+            section_end_pattern = f'RUN ./build_{nfName} --install-deps --force|RUN git clone https://github.com/swig/swig.git'
             main_update_step = f'^#([0-9]+).*oai-{nfName}-base.*RUN apt-get update'
             build_stage_id = 'NotAcorrectBuildStageId'
             with open(f'{cwd}/archives/{logFileName}', 'r') as logfile:
@@ -139,10 +141,10 @@ def nf_base_image_creation(args, nfName):
         logFileName = f'{nfName}_{variant}_image_build.log'
         if os.path.isfile(f'{cwd}/archives/{logFileName}'):
             status = InstallationStatus()
-            section_start_pattern = f'RUN ./build_{nfName} --install-deps --force'
-            section_end_pattern = f'{nfName.upper()} not compiled, to compile it, re-run build_{nfName} without -I option'
+            section_start_pattern = f'RUN ./build_{nfName} --install-deps --force|RUN git clone https://github.com/swig/swig.git'
+            section_end_pattern = f'{nfName.upper()} not compiled, to compile it, re-run build_{nfName} without -I option|WORKDIR /flexric'
             section_status = False
-            main_update_step = f'^#([0-9]+).*oai-{nfName}-base.*RUN ./build_{nfName} --install-deps --force'
+            main_update_step = f'^#([0-9]+).*oai-{nfName}-base.*RUN ./build_{nfName} --install-deps --force|RUN git clone https://github.com/swig/swig.git'
             build_stage_id = 'NotAcorrectBuildStageId'
             with open(f'{cwd}/archives/{logFileName}', 'r') as logfile:
                 for line in logfile:
@@ -204,14 +206,24 @@ def nf_base_image_creation(args, nfName):
                             status.bpftoolToBeInstalled = True
                         if re.search('bpftool installation complete', line) is not None and status.bpftoolToBeInstalled:
                             status.bpftoolStatus = True
+                        if re.search('Cloning into \'swig\'', line) is not None:
+                            status.swigToBeInstalled = True
+                        if re.search('Installation complete', line) is not None and status.swigToBeInstalled:
+                            status.swigStatus = True
             if status.fStatus:
-                messages[idx] = f'OK:\n -- ./build_{nfName} --install-deps --force'
+                if nfName != 'flexric':
+                    messages[idx] = f'OK:\n -- ./build_{nfName} --install-deps --force'
+                else:
+                    messages[idx] = f'OK:\n -- {nfName}: build dependencies installed'
                 if status.isCached:
                     messages[idx] += '\n   * was cached'
             else:
-                messages[idx] = f'KO:\n -- ./build_{nfName} --install-deps --force'
+                if nfName != 'flexric':
+                    messages[idx] = f'KO:\n -- ./build_{nfName} --install-deps --force'
+                else:
+                    messages[idx] = f'KO:\n -- {nfName}: build dependencies NOT installed'
             if not status.isCached:
-                if status.package_install:
+                if status.package_install or nfName == 'flexric':
                     messages[idx] += '\n   * Packages Installation: OK'
                 else:
                     messages[idx] += '\n   * Packages Installation: KO'
@@ -265,6 +277,11 @@ def nf_base_image_creation(args, nfName):
                         messages[idx] += '\n   * bpftool Installation: OK'
                     else:
                         messages[idx] += '\n   * bpftool Installation: KO'
+                if status.swigToBeInstalled:
+                    if status.swigStatus:
+                        messages[idx] += '\n   * swig Installation: OK'
+                    else:
+                        messages[idx] += '\n   * swig Installation: KO'
         else:
             messages[idx] = f'KO:\n -- logfile ({logFileName}) not found'
         idx += 1
@@ -283,8 +300,8 @@ def nf_build_log_check(nfName):
         logFileName = f'{nfName}_{variant}_image_build.log'
         if os.path.isfile(f'{cwd}/archives/{logFileName}'):
             status = BuildStatus()
-            section_start_pattern = f'./build_{nfName} --clean --Verbose --build-type Release --jobs'
-            section_end_pattern = f'{nfName} installed'
+            section_start_pattern = f'./build_{nfName} --clean --Verbose --build-type Release --jobs|{nfName}-builder.*cmake -DCMAKE_C_COMPILER=gcc-12'
+            section_end_pattern = f'{nfName} installed|Installing: /usr/local/etc/{nfName}/{nfName}.conf'
             section_status = False
             with open(f'{cwd}/archives/{logFileName}', 'r') as logfile:
                 for line in logfile:
@@ -308,10 +325,16 @@ def nf_build_log_check(nfName):
                             error_warning_msg = re.sub('^.*' + error_warning_status + ':', '', correctLine)
                             errorMessages.append((filename, linenumber, error_warning_status, error_warning_msg))
 
-            if status.fStatus:
-                messages[2*idx] = f'OK:\n -- build_{nfName} --clean --Verbose --build-type Release --jobs'
+            if nfName != 'flexric':
+                if status.fStatus:
+                    messages[2*idx] = f'OK:\n -- build_{nfName} --clean --Verbose --build-type Release --jobs'
+                else:
+                    messages[2*idx] = f'KO:\n -- build_{nfName} --clean --Verbose --build-type Release --jobs'
             else:
-                messages[2*idx] = f'KO:\n -- build_{nfName} --clean --Verbose --build-type Release --jobs'
+                if status.fStatus:
+                    messages[2*idx] = f'OK:\n -- {nfName}: cmake -DCMAKE_C_COMPILER=gcc-12 .. && make -j8 && make install'
+                else:
+                    messages[2*idx] = f'KO:\n -- {nfName}: cmake -DCMAKE_C_COMPILER=gcc-12 .. && make -j8 && make install'
             if status.nb_errors == 0 and status.nb_warnings == 0:
                 messages[2*idx+1] = 'Perfect:\n  -- 0 errors and 0 warnings found in compile log'
             elif status.nb_errors == 0 and status.nb_warnings < 20:
