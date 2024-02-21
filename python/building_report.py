@@ -77,7 +77,7 @@ def build_summary(args, nfName, ubuntuVersion, rhelVersion):
     details += nf_base_image_creation(args, nfName)
     (buildStatus, errorList) = nf_build_log_check(nfName)
     details += buildStatus
-    (status, imageRow) = nf_target_image_size(nfName)
+    (status, imageRow) = nf_target_image_size(nfName, ubuntuVersion, rhelVersion)
     details += imageRow
     details += generate_build_table_footer()
     if len(errorList) > 0:
@@ -321,7 +321,7 @@ def nf_build_log_check(nfName):
             else:
                 messages[2*idx+1] = f'KO:\n  -- {status.nb_errors} errors and {status.nb_warnings} warnings found in compile log'
         else:
-            messages[2*idxidx] = f'KO:\n -- logfile ({logFileName}) not found'
+            messages[2*idx] = f'KO:\n -- logfile ({logFileName}) not found'
         idx += 1
     details += generate_build_table_double_row('cNF Compile / Build', 'Builder Image', messages[0], messages[1], messages[2], messages[3])
     if len(errorMessages) > 0:
@@ -334,7 +334,7 @@ def nf_build_log_check(nfName):
         extraDetails += generate_button_footer()
     return (details, extraDetails)
 
-def nf_target_image_size(nfName):
+def nf_target_image_size(nfName, ubuntuVersion, rhelVersion):
     cwd = os.getcwd()
     details = ''
     variants = ['ubuntu', 'rhel']
@@ -383,7 +383,10 @@ def nf_target_image_size(nfName):
                 imagesStatus = False
         else:
             messages[idx] = f'KO:\n -- logfile ({logFileName}) not found'
-            imagesStatus = False
+            if variant == 'ubuntu' and ubuntuVersion != 'N/A':
+                imagesStatus = False
+            if variant == 'rhel' and rhelVersion != 'N/A':
+                imagesStatus = False
         idx += 1
     details += generate_build_table_row('Image Size', 'Target Image', messages[0], messages[1])
     return (imagesStatus, details)
