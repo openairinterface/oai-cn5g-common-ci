@@ -300,7 +300,7 @@ def nf_build_log_check(nfName):
         logFileName = f'{nfName}_{variant}_image_build.log'
         if os.path.isfile(f'{cwd}/archives/{logFileName}'):
             status = BuildStatus()
-            section_start_pattern = f'./build_{nfName} --clean --Verbose --build-type Release --jobs|{nfName}-builder.*cmake -DCMAKE_C_COMPILER=gcc-12'
+            section_start_pattern = f'./build_{nfName} --clean --Verbose --build-type Release --jobs|{nfName}-builder.*cmake -GNinja -DCMAKE_C_COMPILER=gcc-12'
             section_end_pattern = f'{nfName} installed|Installing: /usr/local/etc/{nfName}/{nfName}.conf'
             section_status = False
             with open(f'{cwd}/archives/{logFileName}', 'r') as logfile:
@@ -332,9 +332,9 @@ def nf_build_log_check(nfName):
                     messages[2*idx] = f'KO:\n -- build_{nfName} --clean --Verbose --build-type Release --jobs'
             else:
                 if status.fStatus:
-                    messages[2*idx] = f'OK:\n -- {nfName}: cmake -DCMAKE_C_COMPILER=gcc-12 .. && make -j8 && make install'
+                    messages[2*idx] = f'OK:\n -- {nfName}: cmake -DCMAKE_C_COMPILER=gcc-12 .. && ninja && ninja install'
                 else:
-                    messages[2*idx] = f'KO:\n -- {nfName}: cmake -DCMAKE_C_COMPILER=gcc-12 .. && make -j8 && make install'
+                    messages[2*idx] = f'KO:\n -- {nfName}: cmake -DCMAKE_C_COMPILER=gcc-12 .. && ninja && ninja install'
             if status.nb_errors == 0 and status.nb_warnings == 0:
                 messages[2*idx+1] = 'Perfect:\n  -- 0 errors and 0 warnings found in compile log'
             elif status.nb_errors == 0 and status.nb_warnings < 20:
