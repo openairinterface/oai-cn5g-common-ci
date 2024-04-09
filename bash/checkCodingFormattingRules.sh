@@ -199,6 +199,25 @@ do
         fi
     fi
 done
+
+# Doing the common-src submodule folder all the time.
+EXTENSION_LIST=("h" "hpp" "c" "cpp")
+for EXTENSION in ${EXTENSION_LIST[@]}
+do
+    echo "Checking for all files with .${EXTENSION} extension"
+    FILE_LIST=`tree -n --noreport -i -f -P *.${EXTENSION} *common-src | sed -e 's#^\./##' | grep "\.${EXTENSION}"`
+    for FILE_TO_CHECK in ${FILE_LIST[@]}
+    do
+        TO_FORMAT=`clang-format -output-replacements-xml ${FILE_TO_CHECK} 2>&1 | grep -v replacements | grep -c replacement`
+        NB_TOTAL=$((NB_TOTAL + 1))
+        if [ $TO_FORMAT -ne 0 ]
+        then
+            NB_TO_FORMAT=$((NB_TO_FORMAT + 1))
+            echo "src/$FILE_TO_CHECK" >> ./oai_rules_result_list.txt
+        fi
+    done
+done
+
 echo ""
 echo " ----------------------------------------------------------"
 echo "Nb Files that do NOT follow OAI rules: $NB_TO_FORMAT over $NB_TOTAL checked!"
