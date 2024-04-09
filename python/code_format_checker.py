@@ -21,6 +21,7 @@ For more information about the OpenAirInterface (OAI) Software Alliance:
 """
 
 import os
+import shutil
 import common.python.cls_cmd as cls_cmd
 from common.python.generate_html import (
     generate_chapter,
@@ -36,6 +37,7 @@ def coding_formatting_log_check(args):
     details = ''
     chapterName = 'OAI Coding / Formatting Guidelines Check'
     if os.path.isfile(f'{cwd}/src/oai_rules_result.txt'):
+        shutil.copy(f'{cwd}/src/oai_rules_result.txt', f'{cwd}/archives')
         myCmd = cls_cmd.LocalCmd()
         cmd = f'grep NB_FILES_FAILING_CHECK {cwd}/src/oai_rules_result.txt | sed -e "s#NB_FILES_FAILING_CHECK=##"'
         nbFailRet = myCmd.run(cmd)
@@ -55,6 +57,7 @@ def coding_formatting_log_check(args):
         details += generate_chapter(chapterName, message, (int(nbFailRet.stdout) == 0))
 
         if os.path.isfile(f'{cwd}/src/oai_rules_result_list.txt'):
+            shutil.copy(f'{cwd}/src/oai_rules_result_list.txt', f'{cwd}/archives')
             details += generate_button_header('oai-formatting-details', 'More details on formatting check')
             details += '  <p>Please apply the following command to this(ese) file(s): </p>\n'
             details += '  <p style="margin-left: 30px"><strong><code>cd src && clang-format -i filename(s)</code></strong></p>\n'
