@@ -51,6 +51,9 @@ BUILD_TABLE_DOUBLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/build-table-
 WARNING_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-header.htm'
 WARNING_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-footer.htm'
 WARNING_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-row.htm'
+UNIT_TEST_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table-header.htm'
+UNIT_TEST_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table-footer.htm'
+UNIT_TEST_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table-row.htm'
 
 import os
 import re
@@ -388,3 +391,32 @@ def generate_warning_table_row(filename, lineNumber, status, message):
         row = re.sub('STATUS_MESSAGE', message, row)
     return row
 
+def generate_unit_test_table_header():
+    cwd = os.getcwd()
+    header = ''
+    with open(os.path.join(cwd, UNIT_TEST_TABLE_HEADER_TEMPLATE), 'r') as temp:
+        header = temp.read()
+    return header
+
+def generate_unit_test_table_footer():
+    cwd = os.getcwd()
+    footer = ''
+    with open(os.path.join(cwd, UNIT_TEST_TABLE_FOOTER_TEMPLATE), 'r') as temp:
+        footer = temp.read()
+    return footer
+
+def generate_unit_test_table_row(test_id, test_suite, test_name, status):
+    cwd = os.getcwd()
+    row = ''
+    with open(os.path.join(cwd, UNIT_TEST_TABLE_ROW_TEMPLATE), 'r') as temp:
+        row = temp.read()
+        row = re.sub('TEST_ID', test_id, row)
+        row = re.sub('TEST_SUITE', test_suite, row)
+        row = re.sub('TEST_NAME', test_name, row)
+        if status:
+            row = re.sub('STATUS', 'PASS', row)
+            row = re.sub('COLOR', 'lightgreen', row)
+        else:
+            row = re.sub('STATUS', 'FAIL', row)
+            row = re.sub('COLOR', 'lightcoral', row)
+    return row
