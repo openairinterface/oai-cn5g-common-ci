@@ -54,6 +54,11 @@ WARNING_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-row
 UNIT_TEST_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table-header.htm'
 UNIT_TEST_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table-footer.htm'
 UNIT_TEST_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table-row.htm'
+PILL_LIST_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/pill-list-header.htm'
+PILL_LIST_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/pill-list-footer.htm'
+PILL_LIST_ROW_TEMPLATE = 'ci-scripts/common/html-templates/pill-list-row.htm'
+TAB_CONTENT_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/tab-content-header.htm'
+TAB_CONTENT_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/tab-content-footer.htm'
 
 import os
 import re
@@ -420,3 +425,50 @@ def generate_unit_test_table_row(test_id, test_suite, test_name, status):
             row = re.sub('STATUS', 'FAIL', row)
             row = re.sub('COLOR', 'lightcoral', row)
     return row
+
+def generate_nav_pills_list_header():
+    cwd = os.getcwd()
+    header = ''
+    with open(os.path.join(cwd, PILL_LIST_HEADER_TEMPLATE), 'r') as temp:
+        header = temp.read()
+    return header
+
+def generate_nav_pills_list_footer():
+    cwd = os.getcwd()
+    footer = ''
+    with open(os.path.join(cwd, PILL_LIST_FOOTER_TEMPLATE), 'r') as temp:
+        footer = temp.read()
+    return footer
+
+def generate_nav_pills_list_item(title, reference, icon, active=False, status=True):
+    cwd = os.getcwd()
+    row = ''
+    if not status:
+        title = f'<span class="glyphicon glyphicon-remove"></span> {title}'
+    with open(os.path.join(cwd, PILL_LIST_ROW_TEMPLATE), 'r') as temp:
+        row = temp.read()
+        if active:
+            row = re.sub('<li>', '<li class="active">', row)
+        row = re.sub('REFERENCE', reference, row)
+        row = re.sub('TITLE', title, row)
+        row = re.sub('ICON', icon, row)
+    return row
+
+def generate_tab_content_header(reference, active=False):
+    cwd = os.getcwd()
+    header = ''
+    with open(os.path.join(cwd, TAB_CONTENT_HEADER_TEMPLATE), 'r') as temp:
+        header = temp.read()
+        header = re.sub('REFERENCE', reference, header)
+    if active:
+        header = re.sub('fade', 'fade in active', header)
+    return header
+
+def generate_tab_content_footer(final=False):
+    cwd = os.getcwd()
+    footer = ''
+    with open(os.path.join(cwd, TAB_CONTENT_FOOTER_TEMPLATE), 'r') as temp:
+        footer = temp.read()
+    if final:
+        footer += footer
+    return footer
