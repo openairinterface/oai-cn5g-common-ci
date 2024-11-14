@@ -57,7 +57,7 @@ if __name__ == '__main__':
     status = 0
     cnt = 0
     myCmds = cls_cmd.LocalCmd()
-    while cnt < 6*20:
+    while cnt < 6*30:
         ret = myCmds.run(f'oc get pods | grep {args.pod_name}', silent = True)
         if ret.stdout.count('Completed') > 0:
             cnt = 1000
