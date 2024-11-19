@@ -389,7 +389,7 @@ def nf_target_image_size(nfName, ubuntuVersion, rhelVersion):
             section_status = False
             with open(f'{cwd}/archives/{logFileName}', 'r') as logfile:
                 for line in logfile:
-                    result = re.search(f'{section_start_pattern}([0-9a-zA-Z\-\_\.]+)', line)
+                    result = re.search(f'{section_start_pattern}([0-9a-zA-Z\\-\\_\\.]+)', line)
                     if result is not None:
                         section_status = True
                         imageTag = result.group(1)
@@ -405,7 +405,7 @@ def nf_target_image_size(nfName, ubuntuVersion, rhelVersion):
                                 if variant == 'ubuntu':
                                     size = re.sub('MB', ' MB', size)
                                 status = True
-                        result = re.search('Image Size:\\t*([0-9\.]+)MB', line)
+                        result = re.search('Image Size:\\t*([0-9\\.]+)MB', line)
                         if result is not None and not status:
                             fSize = float(result.group(1)) * 2.6
                             size = f'~ {fSize:.1f} MB'

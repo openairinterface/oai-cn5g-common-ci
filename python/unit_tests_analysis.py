@@ -54,7 +54,7 @@ def analyze_unit_tests_run():
                 if ctest_section and re.search('Start *[0-9]*:', line) is not None:
                     nb_started_tests += 1
                     myUnitTest = UnitTest()
-                ret = re.search(' (?P<test_nb>[0-9]+):.*RUN *.* (?P<test_suite>[a-zA-Z0-9]+)\.(?P<test_name>[a-zA-Z0-9]+)', line)
+                ret = re.search(' (?P<test_nb>[0-9]+):.*RUN *.* (?P<test_suite>[a-zA-Z0-9]+)\\.(?P<test_name>[a-zA-Z0-9]+)', line)
                 if ctest_section and ret is not None:
                     myUnitTest.id = ret.group('test_nb')
                     myUnitTest.suite = ret.group('test_suite')

@@ -101,24 +101,4 @@ def _parse_args() -> argparse.Namespace:
     )
 
     args, unknown = parser.parse_known_args()
-    # for backward compatibility, once all pipelines are correct, let remove all this section
-    for item in unknown:
-        if re.search('job_name=', item) is not None:
-            args.job_name = re.sub('\-\-job_name=', '', item)
-        if re.search('job_id=', item) is not None:
-            args.build_id = re.sub('\-\-job_id=', '', item)
-        if re.search('job_url=', item) is not None:
-            args.build_url = re.sub('\-\-job_url=', '', item)
-        if re.search('git_url=', item) is not None:
-            args.git_url = re.sub('\-\-git_url=', '', item)
-        if re.search('git_src_branch=', item) is not None:
-            args.git_src_branch = re.sub('\-\-git_src_branch=', '', item)
-        if re.search('git_src_commit=', item) is not None:
-            args.git_src_commit = re.sub('\-\-git_src_commit=', '', item)
-        if re.search('git_target_branch=', item) is not None:
-            args.git_dst_branch = re.sub('\-\-git_target_branch=', '', item)
-        if re.search('git_target_commit=', item) is not None:
-            args.git_dst_commit = re.sub('\-\-git_target_commit=', '', item)
-        if re.search('git_pull_request=True', item) is not None:
-            args.git_merge_request = True
     return args
