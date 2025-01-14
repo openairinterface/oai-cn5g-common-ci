@@ -32,31 +32,37 @@ logging.basicConfig(
     format="[%(asctime)s] %(levelname)8s: %(message)s"
 )
 
-if __name__ == '__main__':
-    myCmds = cls_cmd.LocalCmd()
-    myCmds.run('oc delete configmap rhsm-ca')
-    myCmds.run('oc delete configmap rhsm-conf')
-    myCmds.run('oc create configmap rhsm-conf --from-file /etc/rhsm/rhsm.conf')
-    myCmds.run('oc create configmap rhsm-ca --from-file /etc/rhsm/ca/redhat-uep.pem')
-    ret = myCmds.run('oc get configmap | grep rhsm')
-    print(ret.stdout)
-    myCmds.run('oc delete secret etc-pki-entitlement')
-    ret = myCmds.run('ls /etc/pki/entitlement/???????????????????.pem | tail -1', silent=True)
-    regres1 = re.search(r"/etc/pki/entitlement/[0-9]+.pem", ret.stdout)
-    ret = myCmds.run('ls /etc/pki/entitlement/???????????????????-key.pem | tail -1', silent=True)
-    regres2 = re.search(r"/etc/pki/entitlement/[0-9]+-key.pem", ret.stdout)
-    if regres1 is None or regres2 is None:
-        logging.error("could not find entitlements")
-        sys.exit(-1)
-    file1 = regres1.group(0)
-    file2 = regres2.group(0)
-    ret = myCmds.run(f'oc create secret generic etc-pki-entitlement --from-file {file1} --from-file {file2}')
-    regres = re.search(r"secret/etc-pki-entitlement created", ret.stdout)
-    if ret.returncode != 0 or regres is None:
-        logging.error("could not create secret/etc-pki-entitlement")
-        sys.exit(-1)
-    ret = myCmds.run('oc get secret | grep pki')
-    print(ret.stdout)
+import argparse
+import re
 
+def recreate_entitlements(args):
+    namespace = args.namespace
+    myCmds = cls_cmd.LocalCmd()
+    try:
+       ret = myCmds.run(f'oc get project {namespace}')
+       if ret.returncode != 0:
+          return 1
+       myCmds.run(f'oc delete secret etc-pki-entitlement -n {namespace}')
+       myCmds.run(f"oc get secret etc-pki-entitlement -n openshift-config-managed -o json |   jq 'del(.metadata.resourceVersion)' | jq 'del(.metadata.creationTimestamp)' |   jq 'del(.metadata.uid)' | jq 'del(.metadata.namespace)' |   oc create -n {namespace} -f -")
+       exitcode = 0
+    except Exception as e:
+       print(f"Exception with reason {e}, in re-creating entitlements in namespace {namespace}")
+       exitcode = 1
     myCmds.close()
-    sys.exit(0)
+    return exitcode
+
+def main():
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-n', '--namespace', default='oaicicd-core', help="Kubernetes namespace name")
+        parser.set_defaults(func=recreate_entitlements)
+        args = parser.parse_args()
+        rc = args.func(args)
+        print("Execution finished, exiting with code {}".format(str(rc)))
+        sys.exit(rc)
+    except Exception as e:
+        print("main() caught exception %s" %(str(e)))
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
