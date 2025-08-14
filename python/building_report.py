@@ -369,6 +369,7 @@ def nf_build_log_check(nfName):
     return (details, extraDetails)
 
 def nf_target_image_size(nfName, ubuntuVersion, rhelVersion):
+    privateRegistryURL = 'selfix.sboai.cs.eurecom.fr'
     cwd = os.getcwd()
     details = ''
     variants = ['ubuntu', 'rhel']
@@ -381,7 +382,7 @@ def nf_target_image_size(nfName, ubuntuVersion, rhelVersion):
             status = False
             imageTag = 'notAcorrectTagForTheMoment'
             if variant == 'ubuntu':
-                section_start_pattern = f'naming to docker.io/library/oai-{nfName}:'
+                section_start_pattern = f'merging manifest list {privateRegistryURL}/oai-{nfName}:'
                 section_end_pattern = f'OAI-{nfName.upper()} UBUNTU IMAGE BUILD'
             else:
                 section_start_pattern = f'COMMIT temp.builder.openshift.io/oaicicd-core/{nfName}'
