@@ -15,11 +15,12 @@ It may also contain scripts to enable automation in order to push new commits on
 
 # Licence info
 
-It is distributed under `OAI Public License V1.1`.
-See [OAI Website for more details](https://www.openairinterface.org/?page_id=698).
+It is distributed under `MIT License`.
 
-The text for `OAI Public License V1.1` is also available under [LICENSE](LICENSE)
+The text for `MIT License` is also available under [LICENSE](LICENSE)
 file at the root of this repository.
+
+The documentation is distributed under Creative Commons Attribution 4.0 International license.
 
 # Collaborative work
 
