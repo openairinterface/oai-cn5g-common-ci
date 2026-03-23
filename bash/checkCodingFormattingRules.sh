@@ -3,7 +3,6 @@
 
 function usage {
     echo "OAI Coding / Formatting Guideline Check script"
-    echo "   Original Author: Raphael Defosseux"
     echo ""
     echo "   Requirement: clang-format / git shall be installed"
     echo ""
