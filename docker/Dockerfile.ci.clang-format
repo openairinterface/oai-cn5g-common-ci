@@ -3,7 +3,7 @@
 # */
 #---------------------------------------------------------------------
 #
-FROM ubuntu:focal as nfName-clang-format-check
+FROM ubuntu:jammy as nfName-clang-format-check
 ARG MERGE_REQUEST_CHECK
 ARG SOURCE_BRANCH
 ARG TARGET_BRANCH
