@@ -138,39 +138,39 @@ def nf_base_image_creation(args, nfName):
                         status.fStatus = True
                         section_status = False
                     if section_status:
-                        if re.search('distro libs installation complete', line) is not None:
+                        if re.search(r'distro libs installation complete', line) is not None:
                             status.package_install = True
-                        if re.search('Starting to install fmt', line) is not None:
+                        if re.search(r'Starting to install fmt', line) is not None:
                             status.fmtToBeInstalled = True
-                        if re.search('fmt installation complete', line) is not None and status.fmtToBeInstalled:
+                        if re.search(r'fmt installation complete', line) is not None and status.fmtToBeInstalled:
                             status.fmtStatus = True
-                        if re.search('Starting to install spdlog', line) is not None:
+                        if re.search(r'Starting to install spdlog', line) is not None:
                             status.spdlogToBeInstalled = True
-                        if re.search('spdlog installation complete', line) is not None and status.spdlogToBeInstalled:
+                        if re.search(r'spdlog installation complete', line) is not None and status.spdlogToBeInstalled:
                             status.spdlogStatus = True
-                        if re.search('Starting to install nghttp2', line) is not None:
+                        if re.search(r'Starting to install nghttp2', line) is not None:
                             status.nghttp2ToBeInstalled = True
-                        if re.search('nghttp2 installation complete', line) is not None and status.nghttp2ToBeInstalled:
+                        if re.search(r'nghttp2 installation complete', line) is not None and status.nghttp2ToBeInstalled:
                             status.nghttp2Status = True
-                        if re.search('Starting to install Nlohmann Json', line) is not None:
+                        if re.search(r'Starting to install Nlohmann Json', line) is not None:
                             status.njsonToBeInstalled = True
-                        if re.search('Nlohmann Json installation complete', line) is not None and status.njsonToBeInstalled:
+                        if re.search(r'Nlohmann Json installation complete', line) is not None and status.njsonToBeInstalled:
                             status.njsonStatus = True
-                        if re.search('Starting to install pistache', line) is not None:
+                        if re.search(r'Starting to install pistache', line) is not None:
                             status.pistacheToBeInstalled = True
-                        if re.search('pistache installation complete', line) is not None and status.pistacheToBeInstalled:
+                        if re.search(r'pistache installation complete', line) is not None and status.pistacheToBeInstalled:
                             status.pistacheStatus = True
-                        if re.search('Starting to install libyaml_cpp', line) is not None:
+                        if re.search(r'Starting to install libyaml_cpp', line) is not None:
                             status.yamlcppToBeInstalled = True
-                        if re.search('yaml-cpp installation complete', line) is not None and status.yamlcppToBeInstalled:
+                        if re.search(r'yaml-cpp installation complete', line) is not None and status.yamlcppToBeInstalled:
                             status.yamlcppStatus = True
-                        if re.search('Starting to install cpp_jwt', line) is not None:
+                        if re.search(r'Starting to install cpp_jwt', line) is not None:
                             status.cppjwtToBeInstalled = True
-                        if re.search('cpp_jwt installation complete', line) is not None and status.cppjwtToBeInstalled:
+                        if re.search(r'cpp_jwt installation complete', line) is not None and status.cppjwtToBeInstalled:
                             status.cppjwtStatus = True
-                        if re.search('Starting to install lttng', line) is not None:
+                        if re.search(r'Starting to install lttng', line) is not None:
                             status.lttngToBeInstalled = True
-                        if re.search('lttng installation complete', line) is not None and status.lttngToBeInstalled:
+                        if re.search(r'lttng installation complete', line) is not None and status.lttngToBeInstalled:
                             status.lttngStatus = True
             if status.fStatus:
                 messages[idx] = f'OK:\n -- ./build_{nfName} --install-deps --force'
@@ -252,11 +252,11 @@ def nf_build_log_check(nfName):
                         section_status = False
                         status.fStatus = True
                     if section_status:
-                        if re.search('error:', line) is not None:
+                        if re.search(r'error:', line) is not None:
                             status.nb_errors += 1
-                        if re.search('warning:', line) is not None:
+                        if re.search(r'warning:', line) is not None:
                             status.nb_warnings += 1
-                        if re.search('error:|warning:', line) is not None:
+                        if re.search(r'error:|warning:', line) is not None:
                             correctLine = re.sub(f'^.*/openair-{nfName}',f'/openair-{nfName}',line.strip())
                             wordsList = correctLine.split(None,2)
                             filename = re.sub(":[0-9]*:[0-9]*:","", wordsList[0])
@@ -279,7 +279,7 @@ def nf_build_log_check(nfName):
             else:
                 messages[2*idx+1] = f'KO:\n  -- {status.nb_errors} errors and {status.nb_warnings} warnings found in compile log'
         else:
-            messages[2*idxidx] = f'KO:\n -- logfile ({logFileName}) not found'
+            messages[2*idx] = f'KO:\n -- logfile ({logFileName}) not found'
         idx += 1
     details += generate_build_table_double_row('cNF Compile / Build', 'Builder Image', messages[0], messages[1], messages[2], messages[3])
     if len(errorMessages) > 0:
@@ -323,7 +323,7 @@ def nf_target_image_size(nfName):
                     if section_status:
                         result = re.search(f'oai-{nfName} *{imageTag}', line)
                         if result is not None and not status:
-                            result = re.search('ago  *([0-9A-Z ]+)', line)
+                            result = re.search(r'ago  *([0-9A-Z ]+)', line)
                             if result is not None:
                                 size = result.group(1)
                                 if variant == 'docker':
