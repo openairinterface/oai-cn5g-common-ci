@@ -25,13 +25,13 @@ def coding_formatting_log_check(args):
         nbTotalRet = myCmd.run(cmd)
         myCmd.close()
         if int(nbFailRet.stdout) == 0:
-            if args.git_merge_request:
-                message = f'All modified files in Merge-Request follow OAI rules. ({nbTotalRet.stdout} were checked)'
+            if args.git_pull_request:
+                message = f'All modified files in this Pull Request follow OAI rules. ({nbTotalRet.stdout} were checked)'
             else:
                 message = f'All files in repository follow OAI rules. ({nbTotalRet.stdout} were checked)'
         else:
-            if args.git_merge_request:
-                message = f'{nbFailRet.stdout} modified files in Merge-Request DO NOT follow OAI rules. ({nbTotalRet.stdout} were checked)'
+            if args.git_pull_request:
+                message = f'{nbFailRet.stdout} modified files in this Pull Request DO NOT follow OAI rules. ({nbTotalRet.stdout} were checked)'
             else:
                 message = f'{nbFailRet.stdout} files in repository DO NO follow OAI rules. ({nbTotalRet.stdout} were checked)'
         details += generate_chapter(chapterName, message, (int(nbFailRet.stdout) == 0))

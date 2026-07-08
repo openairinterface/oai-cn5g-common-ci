@@ -58,12 +58,13 @@ def _parse_args() -> argparse.Namespace:
         help='GIT source commit (SHA-ONE)',
     )
 
-    # GIT MR or PR
+    # GIT source is a pull request
     parser.add_argument(
-        '--git-merge-request',
+        '--git-pull-request',
+        dest='git_pull_request',
         action='store_true',
         default=False,
-        help='GIT source commit (SHA-ONE)',
+        help='GIT source is a pull request',
     )
 
     # GIT destination branch
@@ -78,6 +79,43 @@ def _parse_args() -> argparse.Namespace:
         '--git-dst-commit',
         action='store',
         help='GIT destination commit (SHA-ONE)',
+    )
+
+    # Network Function name (e.g. amf, smf, ausf...)
+    parser.add_argument(
+        '--nf',
+        action='store',
+        help='Network Function name (e.g. amf, smf, ausf)',
+    )
+
+    # Whether to include the unit-tests section in the generated report
+    parser.add_argument(
+        '--has-unit-tests',
+        action='store_true',
+        default=False,
+        help='Include the unit-tests section in the report',
+    )
+
+    # Pull request URL (only used when --git-pull-request is set)
+    parser.add_argument(
+        '--pr-url',
+        action='store',
+        help='Pull request URL, substituted into the report',
+    )
+
+    # Pull request title -- raw, untrusted author-controlled text; generate_html.py
+    # sanitizes it before embedding into the HTML report
+    parser.add_argument(
+        '--pr-title',
+        action='store',
+        help='Pull request title, substituted into the report',
+    )
+
+    # Report generation timestamp
+    parser.add_argument(
+        '--build-time',
+        action='store',
+        help='Build start time, substituted into the report',
     )
 
     args, unknown = parser.parse_known_args()

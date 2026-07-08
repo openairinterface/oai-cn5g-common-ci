@@ -20,7 +20,7 @@ LIST_SUB_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/list-sub-header.htm
 LIST_SUB_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/list-sub-footer.htm'
 LIST_SUB_ROW_TEMPLATE = 'ci-scripts/common/html-templates/list-sub-row.htm'
 GIT_INFO_PUSH_TEMPLATE = 'ci-scripts/common/html-templates/git-info-table-push.htm'
-GIT_INFO_MR_TEMPLATE = 'ci-scripts/common/html-templates/git-info-table-mr.htm'
+GIT_INFO_PR_TEMPLATE = 'ci-scripts/common/html-templates/git-info-table-pr.htm'
 CPPCHECK_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/cppcheck-table-header.htm'
 CPPCHECK_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/cppcheck-table-footer.htm'
 CPPCHECK_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/cppcheck-table-row.htm'
@@ -37,6 +37,13 @@ UNIT_TEST_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/unit-test-table
 
 import os
 import re
+
+# PR titles are untrusted free text embedded into the HTML; keep only safe
+# chars so a malicious title can't break out into markup/script.
+_UNSAFE_TITLE_CHARS = re.compile(r'[^a-zA-Z0-9",.\?\-_ %+\[\]()~]')
+
+def _sanitize_title(title):
+    return _UNSAFE_TITLE_CHARS.sub('-', title)
 
 def generate_header(args):
     cwd = os.getcwd()
@@ -59,11 +66,11 @@ def generate_git_info(args):
     cwd = os.getcwd()
     header = ''
     fileToUse = GIT_INFO_PUSH_TEMPLATE
-    isMr = False
-    if hasattr(args, 'git_merge_request'):
-        if args.git_merge_request:
-            fileToUse = GIT_INFO_MR_TEMPLATE
-            isMr = True
+    isPr = False
+    if hasattr(args, 'git_pull_request'):
+        if args.git_pull_request:
+            fileToUse = GIT_INFO_PR_TEMPLATE
+            isPr = True
     with open(os.path.join(cwd, fileToUse), 'r') as temp:
         header = temp.read()
         if hasattr(args, 'git_src_branch'):
@@ -72,11 +79,17 @@ def generate_git_info(args):
             header = re.sub('SRC_COMMIT', args.git_src_commit, header)
         if hasattr(args, 'git_url'):
             header = re.sub('GIT_URL', args.git_url, header)
-        if isMr:
+        if getattr(args, 'build_time', None):
+            header = header.replace('TEMPLATE_TIME', args.build_time)
+        if isPr:
             if hasattr(args, 'git_dst_branch'):
                 header = re.sub('DST_BRANCH', args.git_dst_branch, header)
             if hasattr(args, 'git_dst_commit'):
                 header = re.sub('DST_COMMIT', args.git_dst_commit, header)
+            if getattr(args, 'pr_url', None):
+                header = header.replace('TEMPLATE_PULL_REQUEST_LINK', args.pr_url)
+            if getattr(args, 'pr_title', None):
+                header = header.replace('TEMPLATE_PULL_REQUEST_TITLE', _sanitize_title(args.pr_title))
     return header
 
 def generate_footer():
