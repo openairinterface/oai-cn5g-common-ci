@@ -28,9 +28,6 @@ from static_code_analysis import analyze_sca_log_check
 from building_report import build_summary
 from unit_tests_analysis import analyze_unit_tests_run
 
-UBUNTU_VERSION = '22'
-RHEL_VERSION = '9'
-
 # Substring markers used when scanning existing report files.
 CN5G_REPORT_MARKER = 'results_oai_cn5g_'
 ROBOT_REPORT_MARKER = 'test_results_robot_'
@@ -52,7 +49,7 @@ class HtmlReport:
         with self.report_path.open('w') as wfile:
             wfile.write(generate_header(args))
             wfile.write(generate_git_info(args))
-            wfile.write(build_summary(args, self.nf_name, UBUNTU_VERSION, RHEL_VERSION))
+            wfile.write(build_summary(args, self.nf_name))
             wfile.write(coding_formatting_log_check(args))
             wfile.write(analyze_sca_log_check())
             if self.has_unit_tests:

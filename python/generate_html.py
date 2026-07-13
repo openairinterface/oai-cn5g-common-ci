@@ -24,10 +24,6 @@ GIT_INFO_PR_TEMPLATE = 'ci-scripts/common/html-templates/git-info-table-pr.htm'
 CPPCHECK_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/cppcheck-table-header.htm'
 CPPCHECK_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/cppcheck-table-footer.htm'
 CPPCHECK_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/cppcheck-table-row.htm'
-BUILD_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/build-table-header.htm'
-BUILD_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/build-table-footer.htm'
-BUILD_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/build-table-row.htm'
-BUILD_TABLE_DOUBLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/build-table-double-row.htm'
 WARNING_TABLE_HEADER_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-header.htm'
 WARNING_TABLE_FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-footer.htm'
 WARNING_TABLE_ROW_TEMPLATE = 'ci-scripts/common/html-templates/warning-table-row.htm'
@@ -273,85 +269,6 @@ def generate_cppcheck_table_row(cppcheckErr):
         row = re.sub('ERROR_MESSAGE', cppcheckErr.message, row)
         row = re.sub('FILENAME', cppcheckErr.filename, row)
         row = re.sub('LINE_NUMBER', cppcheckErr.lineNb, row)
-    return row
-
-def generate_build_table_header(nfName, ubuntuVersion, rhelVersion):
-    cwd = os.getcwd()
-    header = ''
-    with open(os.path.join(cwd, BUILD_TABLE_HEADER_TEMPLATE), 'r') as temp:
-        header = temp.read()
-        header = re.sub('NF_NAME', nfName, header)
-        header = re.sub('UBUNTU_VERSION', ubuntuVersion, header)
-        header = re.sub('RHEL_VERSION', rhelVersion, header)
-    return header
-
-def generate_build_table_footer():
-    cwd = os.getcwd()
-    footer = ''
-    with open(os.path.join(cwd, BUILD_TABLE_FOOTER_TEMPLATE), 'r') as temp:
-        footer = temp.read()
-    return footer
-
-def generate_build_table_row(stageName, imageKind, ubuntuMessage, rhelMessage):
-    cwd = os.getcwd()
-    row = ''
-    if re.search('^OK', ubuntuMessage) is not None:
-        ubuntuColor = 'LimeGreen'
-    else:
-        ubuntuColor = 'Tomato'
-    if re.search('^OK', rhelMessage) is not None:
-        rhelColor = 'LimeGreen'
-    else:
-        rhelColor = 'Tomato'
-    with open(os.path.join(cwd, BUILD_TABLE_ROW_TEMPLATE), 'r') as temp:
-        row = temp.read()
-        row = re.sub('STAGE_NAME', stageName, row)
-        row = re.sub('IMAGE_KIND', imageKind, row)
-        row = re.sub('UBUNTU_MESSAGE', ubuntuMessage, row)
-        row = re.sub('UBUNTU_COLOR', ubuntuColor, row)
-        row = re.sub('RHEL_MESSAGE', rhelMessage, row)
-        row = re.sub('RHEL_COLOR', rhelColor, row)
-    return row
-
-def generate_build_table_double_row(stageName, imageKind, ubuntuMessage0, ubuntuMessage1, rhelMessage0, rhelMessage1):
-    cwd = os.getcwd()
-    row = ''
-    if re.search('^OK', ubuntuMessage0) is not None:
-        ubuntu0Color = 'LimeGreen'
-    else:
-        ubuntu0Color = 'Tomato'
-    if re.search('^Perfect', ubuntuMessage1) is not None:
-        ubuntu1Color = 'LimeGreen'
-    elif re.search('^OK', ubuntuMessage1) is not None:
-        ubuntu1Color = 'Chartreuse'
-    elif re.search('^ToBeImproved', ubuntuMessage1) is not None:
-        ubuntu1Color = 'Orange'
-    else:
-        ubuntu1Color = 'Tomato'
-    if re.search('^OK', rhelMessage0) is not None:
-        rhel0Color = 'LimeGreen'
-    else:
-        rhel0Color = 'Tomato'
-    if re.search('^Perfect', rhelMessage1) is not None:
-        rhel1Color = 'LimeGreen'
-    elif re.search('^OK', rhelMessage1) is not None:
-        rhel1Color = 'Chartreuse'
-    elif re.search('^ToBeImproved', rhelMessage1) is not None:
-        rhel1Color = 'Orange'
-    else:
-        rhel1Color = 'Tomato'
-    with open(os.path.join(cwd, BUILD_TABLE_DOUBLE_ROW_TEMPLATE), 'r') as temp:
-        row = temp.read()
-        row = re.sub('STAGE_NAME', stageName, row)
-        row = re.sub('IMAGE_KIND', imageKind, row)
-        row = re.sub('UBUNTU0_MESSAGE', ubuntuMessage0, row)
-        row = re.sub('UBUNTU0_COLOR', ubuntu0Color, row)
-        row = re.sub('RHEL0_MESSAGE', rhelMessage0, row)
-        row = re.sub('RHEL0_COLOR', rhel0Color, row)
-        row = re.sub('UBUNTU1_MESSAGE', ubuntuMessage1, row)
-        row = re.sub('UBUNTU1_COLOR', ubuntu1Color, row)
-        row = re.sub('RHEL1_MESSAGE', rhelMessage1, row)
-        row = re.sub('RHEL1_COLOR', rhel1Color, row)
     return row
 
 def generate_warning_table_header():
