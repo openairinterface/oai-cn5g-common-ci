@@ -3,7 +3,7 @@
 # */
 #---------------------------------------------------------------------
 #
-FROM ubuntu:focal as nfName-cppcheck
+FROM ubuntu:focal AS nfName-cppcheck
 
 RUN apt-get update && \
     apt-get upgrade -y && \

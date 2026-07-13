@@ -41,6 +41,10 @@ _UNSAFE_TITLE_CHARS = re.compile(r'[^a-zA-Z0-9",.\?\-_ %+\[\]()~]')
 def _sanitize_title(title):
     return _UNSAFE_TITLE_CHARS.sub('-', title)
 
+def pluralize(count, noun):
+    """'1 file' / '2 files' -- count-agreed noun, no '(s)' clutter."""
+    return f'{count} {noun}' if count == 1 else f'{count} {noun}s'
+
 def generate_header(args):
     cwd = os.getcwd()
     header = ''
@@ -259,13 +263,14 @@ def generate_cppcheck_table_row(cppcheckErr):
     cwd = os.getcwd()
     row = ''
     if cppcheckErr.severity == 'error':
-        severityColor = 'Tomato'
+        severityBg, severityFg = '#f2dede', '#a94442'   # soft red / dark red
     else:
-        severityColor = 'Orange'
+        severityBg, severityFg = '#fcf8e3', '#8a6d3b'   # soft amber / brown
     with open(os.path.join(cwd, CPPCHECK_TABLE_ROW_TEMPLATE), 'r') as temp:
         row = temp.read()
         row = re.sub('ERROR_TYPE', cppcheckErr.severity, row)
-        row = re.sub('SEVERITY_COLOR', severityColor, row)
+        row = re.sub('SEVERITY_BG', severityBg, row)
+        row = re.sub('SEVERITY_FG', severityFg, row)
         row = re.sub('ERROR_MESSAGE', cppcheckErr.message, row)
         row = re.sub('FILENAME', cppcheckErr.filename, row)
         row = re.sub('LINE_NUMBER', cppcheckErr.lineNb, row)

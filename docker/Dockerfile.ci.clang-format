@@ -3,7 +3,7 @@
 # */
 #---------------------------------------------------------------------
 #
-FROM ubuntu:jammy as nfName-clang-format-check
+FROM ubuntu:jammy AS nfName-clang-format-check
 # Empty for push builds (whole-repo check); the caller passes
 # "--src-branch X --target-branch Y" for PR builds (diff-only check) --
 # checkCodingFormattingRules.sh branches on argument count, not on
