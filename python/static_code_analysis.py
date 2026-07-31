@@ -10,7 +10,11 @@ from common.python.generate_html import (
     generate_cppcheck_table_header,
     generate_cppcheck_table_footer,
     generate_cppcheck_table_row,
+    pluralize,
 )
+
+# Dockerfile that defines the cppcheck check environment (see Jenkinsfile).
+CPPCHECK_DOCKERFILE = 'ci-scripts/common/docker/Dockerfile.ci.cppcheck'
 
 class CppCheckError():
     def __init__(self):
@@ -57,14 +61,16 @@ def analyze_sca_log_check():
                     fullDesc = False
 
         if (nb_errors == 0) and (nb_warnings == 0):
-            details += generate_chapter(chapterName, 'CPPCHECK found NO error and NO warning.', True)
+            details += generate_chapter(chapterName, 'Cppcheck reported no errors or warnings.', True)
         elif nb_errors == 0:
-            details += generate_chapter(chapterName, f'CPPCHECK found NO error and {nb_warnings} warning(s).', True)
+            details += generate_chapter(chapterName, f'Cppcheck reported no errors and {pluralize(nb_warnings, "warning")}.', True)
         else:
-            details += generate_chapter(chapterName, f'CPPCHECK found {nb_errors} error(s) and {nb_warnings} warning(s).', False)
+            details += generate_chapter(chapterName, f'Cppcheck reported {pluralize(nb_errors, "error")} and {pluralize(nb_warnings, "warning")}.', False)
 
         if (nb_errors > 0) or (nb_warnings > 0):
             details += generate_button_header('oai-cppcheck-details', 'More details on CPPCHECK results')
+            if os.path.isfile(f'{cwd}/{CPPCHECK_DOCKERFILE}'):
+                details += f'  <p>Checked using <code>{CPPCHECK_DOCKERFILE}</code></p>\n'
             details += generate_cppcheck_table_header()
             for myError in listOfErrors:
                 details += generate_cppcheck_table_row(myError)

@@ -7,10 +7,15 @@ from common.python.generate_html import (
     generate_chapter,
     generate_button_header,
     generate_button_footer,
-    generate_list_header,
-    generate_list_footer,
-    generate_list_row,
+    pluralize,
 )
+
+# Dockerfile that defines the clang-format check environment (see Jenkinsfile).
+CLANG_FORMAT_DOCKERFILE = 'ci-scripts/common/docker/Dockerfile.ci.clang-format'
+
+
+def _html_escape(text):
+    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 def coding_formatting_log_check(args):
     cwd = os.getcwd()
@@ -24,28 +29,41 @@ def coding_formatting_log_check(args):
         cmd = f'grep NB_FILES_CHECKED {cwd}/src/oai_rules_result.txt | sed -e "s#NB_FILES_CHECKED=##"'
         nbTotalRet = myCmd.run(cmd)
         myCmd.close()
-        if int(nbFailRet.stdout) == 0:
-            if args.git_merge_request:
-                message = f'All modified files in Merge-Request follow OAI rules. ({nbTotalRet.stdout} were checked)'
-            else:
-                message = f'All files in repository follow OAI rules. ({nbTotalRet.stdout} were checked)'
+        nbFail = int(nbFailRet.stdout)
+        nbTotal = int(nbTotalRet.stdout)
+        scope = 'in this pull request' if args.git_pull_request else 'in the repository'
+        if nbFail == 0:
+            message = f'All {pluralize(nbTotal, "file")} {scope} follow the OAI coding / formatting rules.'
         else:
-            if args.git_merge_request:
-                message = f'{nbFailRet.stdout} modified files in Merge-Request DO NOT follow OAI rules. ({nbTotalRet.stdout} were checked)'
-            else:
-                message = f'{nbFailRet.stdout} files in repository DO NO follow OAI rules. ({nbTotalRet.stdout} were checked)'
-        details += generate_chapter(chapterName, message, (int(nbFailRet.stdout) == 0))
+            message = f'{pluralize(nbFail, "file")} to reformat {scope} ({nbTotal} checked).'
+        details += generate_chapter(chapterName, message, (nbFail == 0))
 
         if os.path.isfile(f'{cwd}/src/oai_rules_result_list.txt'):
             shutil.copy(f'{cwd}/src/oai_rules_result_list.txt', f'{cwd}/archives')
             details += generate_button_header('oai-formatting-details', 'More details on formatting check')
-            details += '  <p>Please apply the following command to this(ese) file(s): </p>\n'
-            details += '  <p style="margin-left: 30px"><strong><code>cd src && clang-format -i filename(s)</code></strong></p>\n'
-            details += generate_list_header()
+
+            # Summary table: environment + counts + how to fix.
+            details += '  <table class="table-bordered" width = "90%" align = "center" border = "1">\n'
+            if os.path.isfile(f'{cwd}/{CLANG_FORMAT_DOCKERFILE}'):
+                details += ('    <tr><td bgcolor="lightcyan" style="width:30%">Dockerfile</td>'
+                            f'<td><code>{CLANG_FORMAT_DOCKERFILE}</code></td></tr>\n')
+            details += ('    <tr><td bgcolor="lightcyan">Number of files checked</td>'
+                        f'<td>{nbTotalRet.stdout.strip()}</td></tr>\n')
+            details += ('    <tr><td bgcolor="lightcyan">Number of files not following the rules</td>'
+                        f'<td>{nbFailRet.stdout.strip()}</td></tr>\n')
+            details += ('    <tr><td bgcolor="lightcyan">Command to fix</td>'
+                        '<td><code>cd src && clang-format -i filename(s)</code></td></tr>\n')
+            details += '  </table>\n  <br>\n'
+
+            # File list table.
+            details += '  <table class="table-bordered" width = "90%" align = "center" border = "1">\n'
+            details += '    <tr bgcolor = "#33CCFF" ><th>File(s) not following OAI coding / formatting rules</th></tr>\n'
             with open(cwd + '/src/oai_rules_result_list.txt', 'r') as filelist:
                 for line in filelist:
-                    details += generate_list_row(line.strip(), 'indent-left')
-            details += generate_list_footer()
+                    fname = line.strip()
+                    if fname:
+                        details += f'    <tr><td><code>{_html_escape(fname)}</code></td></tr>\n'
+            details += '  </table>\n  <br>\n'
             details += generate_button_footer()
     else:
         details += generate_chapter(chapterName, 'Was NOT performed (with CLANG-FORMAT tool).', False)

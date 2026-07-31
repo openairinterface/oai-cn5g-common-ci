@@ -13,7 +13,7 @@ This repository is meant for Continuous Integration scripts that are shared by a
 
 It may also contain scripts to enable automation in order to push new commits on this shared CI sub-module to all its parent repositories.
 
-# Licence info
+## Licence info
 
 It is distributed under `MIT License`.
 
@@ -22,18 +22,16 @@ file at the root of this repository.
 
 The documentation is distributed under Creative Commons Attribution 4.0 International license.
 
-# Collaborative work
+## Collaborative Development
 
-This source code is managed through a GITLAB server, a collaborative development platform:
+This source code is hosted and maintained on GitHub, enabling collaborative development and contribution:
 
-*  URL: [https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-common-ci](https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-common-ci).
+*  URL: [https://github.com/openairinterface/oai-cn5g-common-ci](https://github.com/openairinterface/oai-cn5g-common-ci).
 
-Process is explained in [CONTRIBUTING](CONTRIBUTING.md) file.
+Contribution guidelines and development workflows are described in the [CONTRIBUTING](CONTRIBUTING.md) file.
 
-# Contribution requests
+## Contribution Requests
 
-In a general way, anybody who is willing can contribute on any part of the
-code in any network component.
+Anyone is welcome to contribute to any part of the codebase and any network component.
 
-Contributions can be simple bugfixes, advices and remarks on the design,
-architecture, coding/implementation.
+Contributions can include bug fixes, suggestions, design and architecture improvements, as well as feedback on coding and implementation.
