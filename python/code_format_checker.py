@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: MIT
+#
+# "OAI Coding / Formatting Guidelines Check" section of the HTML report.
+# Takes the checked/failing counts from src/oai_rules_result.txt and, when
+# present, the offending filenames from src/oai_rules_result_list.txt; copies
+# both into archives/ and renders the pass/fail chapter with a details table.
 
 import os
 import shutil
 import common.python.cls_cmd as cls_cmd
-from common.python.generate_html import (
+from common.python.html_builder import (
     generate_chapter,
     generate_button_header,
     generate_button_footer,

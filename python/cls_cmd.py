@@ -1,4 +1,8 @@
 # SPDX-License-Identifier: MIT
+#
+# Minimal shell-command wrapper used across the CI scripts.
+# LocalCmd.run() executes a command, merges stderr into stdout, decodes it, and
+# never raises -- failures surface as a non-zero returncode on the result.
 
 import logging
 import subprocess as sp

@@ -1,4 +1,8 @@
 # SPDX-License-Identifier: MIT
+#
+# Command-line interface for generateHtmlReport.py.
+# Defines the arguments the Jenkinsfiles pass in: target NF, job/build identity,
+# git source and target refs, and the optional pull-request metadata.
 
 import argparse
 import re
@@ -103,7 +107,7 @@ def _parse_args() -> argparse.Namespace:
         help='Pull request URL, substituted into the report',
     )
 
-    # Pull request title -- raw, untrusted author-controlled text; generate_html.py
+    # Pull request title -- raw, untrusted author-controlled text; html_builder.py
     # sanitizes it before embedding into the HTML report
     parser.add_argument(
         '--pr-title',
