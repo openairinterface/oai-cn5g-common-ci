@@ -268,9 +268,16 @@ def parse_variant(nf, variant, archives_dir, docker_dir):
         _finalize(data, deps)
         return data
 
+    # reaching this stage does not mean the image was created: the target stage
+    # runs after the builder, so a failure there lands here -- as does a stage the
+    # pipeline declared failed after pushing, which leaves no BuildKit error
+    stage_failed = bool(re.search(r'status is FAILURE\s*$', data['last_log_line'] or '', re.I))
+    target_ok = success and not stage_failed
     size_txt = data['image_size'] or 'created'
-    data['stages'].append({'name': 'Target image size', 'status': 'OK',
-                           'details': size_txt, 'fail_lines': []})
+    data['stages'].append({'name': 'Target image size',
+                           'status': 'OK' if target_ok else 'FAILED',
+                           'details': size_txt if target_ok else 'Target image was not created',
+                           'fail_lines': [] if target_ok else failed_lines})
     _finalize(data, deps)
     return data
 
