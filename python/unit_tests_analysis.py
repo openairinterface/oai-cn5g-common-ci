@@ -31,6 +31,7 @@ def analyze_unit_tests_run():
     nb_started_tests = 0
     nb_passed_tests = 0
     list_of_tests = []
+    myUnitTest = UnitTest()
     if os.path.isfile(cwd + '/archives/build-unit-tests.log'):
         with open(f'{cwd}/archives/build-unit-tests.log', 'r') as logfile:
             for line in logfile:
