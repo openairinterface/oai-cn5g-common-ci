@@ -187,9 +187,10 @@ if [ -f "$CLA_CSV" ] && [ -r "$CLA_CSV" ]; then
         message+="$claMissing\n\n"
         message+="Please ensure that all commit authors, committers, \`Signed-off-by\` and "
         message+="\`Co-authored-by\` identities are covered by an approved CLA.\n\n"
-        message+="For details on signing the CLA and resolving CLA check failures, please "
-        message+="refer to the **CONTRIBUTING** file at the root of this repository or "
-        message+="contact \`oaicicd@openairinterface.org\`."
+        message+="You can find and sign the applicable CLA here: "
+        message+="[Contributor License Agreement (CLA)](https://github.com/openairinterface/oai-cn5g-fed/wiki/Contributor-License-Agreement-%28CLA%29)\n"
+        message+="For more details, please refer to the **CONTRIBUTING** file "
+        message+="at the root of this repository or contact \`oaicicd@openairinterface.org\`."
         echo -e "$message"
         exit 2
     fi
