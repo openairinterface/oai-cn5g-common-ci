@@ -1,9 +1,13 @@
 # SPDX-License-Identifier: MIT
+#
+# "Unit Tests Run Analysis" section of the HTML report.
+# Parses archives/build-unit-tests.log and renders each case as an
+# id/suite/name/status row. Included only when the NF passes --has-unit-tests.
 
 import os
 import re
 import common.python.cls_cmd as cls_cmd
-from common.python.generate_html import (
+from common.python.html_builder import (
     generate_chapter,
     generate_button_header,
     generate_button_footer,
@@ -27,6 +31,7 @@ def analyze_unit_tests_run():
     nb_started_tests = 0
     nb_passed_tests = 0
     list_of_tests = []
+    myUnitTest = UnitTest()
     if os.path.isfile(cwd + '/archives/build-unit-tests.log'):
         with open(f'{cwd}/archives/build-unit-tests.log', 'r') as logfile:
             for line in logfile:

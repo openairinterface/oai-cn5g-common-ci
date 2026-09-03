@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: MIT
+#
+# "Static Code Analysis" section of the HTML report.
+# Parses archives/cppcheck.xml and renders the findings as a table of
+# severity / message / file / line. If the file is absent the chapter is still
+# emitted, marked failed with "Was NOT performed".
 
 import os
 import re
 import common.python.cls_cmd as cls_cmd
-from common.python.generate_html import (
+from common.python.html_builder import (
     generate_chapter,
     generate_button_header,
     generate_button_footer,

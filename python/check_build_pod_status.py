@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
+#
+# Waits for an OpenShift build pod to finish, then saves its logs.
+# Polls `oc get pods` every 10s for up to 30 minutes, then always writes the
+# pod logs out. Exit status: 0 on Completed, non-zero if it errored or timed out.
 
 import argparse
 import logging

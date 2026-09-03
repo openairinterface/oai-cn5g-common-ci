@@ -1,4 +1,9 @@
 # SPDX-License-Identifier: MIT
+#
+# HTML building blocks for the CI report -- the shared rendering library.
+# Provides the generate_*() helpers that fill the html-templates/*.htm files,
+# plus pluralize() and the _sanitize_title() guard for untrusted PR titles.
+# Imported by the report sections; generateHtmlReport.py drives them.
 
 HEADER_TEMPLATE = 'ci-scripts/common/html-templates/file-header.htm'
 FOOTER_TEMPLATE = 'ci-scripts/common/html-templates/file-footer.htm'

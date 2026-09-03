@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
+#
+# Refreshes the RHEL entitlement secret in an OpenShift namespace.
+# Copies etc-pki-entitlement from openshift-config-managed into the target
+# namespace so RHEL image builds can reach subscription-gated repositories.
 
 import logging
 import re

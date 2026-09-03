@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: MIT
+#
+# "OAI Coding / Formatting Guidelines Check" section of the HTML report.
+# Takes the checked/failing counts from src/oai_rules_result.txt and, when
+# present, the offending filenames from src/oai_rules_result_list.txt; copies
+# both into archives/ and renders the pass/fail chapter with a details table.
 
 import os
 import shutil
 import common.python.cls_cmd as cls_cmd
-from common.python.generate_html import (
+from common.python.html_builder import (
     generate_chapter,
     generate_button_header,
     generate_button_footer,
@@ -29,8 +34,11 @@ def coding_formatting_log_check(args):
         cmd = f'grep NB_FILES_CHECKED {cwd}/src/oai_rules_result.txt | sed -e "s#NB_FILES_CHECKED=##"'
         nbTotalRet = myCmd.run(cmd)
         myCmd.close()
-        nbFail = int(nbFailRet.stdout)
-        nbTotal = int(nbTotalRet.stdout)
+        nbFail, nbTotal = nbFailRet.stdout.strip(), nbTotalRet.stdout.strip()
+        if not (nbFail.isdigit() and nbTotal.isdigit()):
+            return details + generate_chapter(
+                chapterName, 'Was NOT performed (with CLANG-FORMAT tool).', False)
+        nbFail, nbTotal = int(nbFail), int(nbTotal)
         scope = 'in this pull request' if args.git_pull_request else 'in the repository'
         if nbFail == 0:
             message = f'All {pluralize(nbTotal, "file")} {scope} follow the OAI coding / formatting rules.'

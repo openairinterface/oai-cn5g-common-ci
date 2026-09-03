@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
+#
+# CI entry point: builds test_results_oai_<nf>.html for a network function.
+# Invoked from the NF Jenkinsfiles. Orchestrates the report sections in order
+# (header, git info, build summary, format check, SCA, unit tests, footer) and
+# then splices the git info into other result pages.
 
 import argparse
 import re
@@ -17,16 +22,20 @@ def _ensure_ci_scripts_on_syspath() -> None:
 
 _ensure_ci_scripts_on_syspath()
 
-from pipeline_args_parse import _parse_args
-from generate_html import (
+# Import the siblings under the same 'common.python.X' names they use for each
+# other. A bare 'import X' here resolves via this file's own directory and loads
+# a second, independent copy of the module alongside the 'common.python.X' one
+# the siblings have already imported.
+from common.python.pipeline_args_parse import _parse_args
+from common.python.html_builder import (
     generate_header,
     generate_footer,
     generate_git_info,
 )
-from code_format_checker import coding_formatting_log_check
-from static_code_analysis import analyze_sca_log_check
-from building_report import build_summary
-from unit_tests_analysis import analyze_unit_tests_run
+from common.python.code_format_checker import coding_formatting_log_check
+from common.python.static_code_analysis import analyze_sca_log_check
+from common.python.building_report import build_summary
+from common.python.unit_tests_analysis import analyze_unit_tests_run
 
 # Substring markers used when scanning existing report files.
 CN5G_REPORT_MARKER = 'results_oai_cn5g_'
