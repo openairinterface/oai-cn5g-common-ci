@@ -12,7 +12,7 @@ from common.python.container_build_summary import parse_variant, render_section
 _VARIANTS = [
     ('ubuntu', 'Build Ubuntu Image'),
     ('ubuntu_lttng', 'Build Ubuntu Image with LTTNG'),
-    ('rhel', 'Build RHEL Image'),
+    ('centos', 'Build CentOS Image'),
 ]
 
 

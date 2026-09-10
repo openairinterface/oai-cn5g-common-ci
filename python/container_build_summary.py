@@ -152,7 +152,7 @@ def parse_variant(nf, variant, archives_dir, docker_dir):
     if not data['present']:
         return data
 
-    dockerfile = os.path.join(docker_dir, f'Dockerfile.{nf}.{"rhel9" if variant == "rhel" else "ubuntu"}')
+    dockerfile = os.path.join(docker_dir, f'Dockerfile.{nf}.{"centos" if variant == "centos" else "ubuntu"}')
     data['dockerfile'] = os.path.relpath(dockerfile) if os.path.isfile(dockerfile) else None
     data['base_images'] = parse_base_images(dockerfile, nf)
 
