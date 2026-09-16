@@ -3,7 +3,7 @@
 # */
 #---------------------------------------------------------------------
 #
-FROM ubuntu:focal AS nfName-cppcheck
+FROM ubuntu:noble AS nfName-cppcheck
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -12,7 +12,8 @@ RUN apt-get update && \
 WORKDIR /home
 COPY . .
 
-RUN cppcheck --enable=warning --force \
+RUN cppcheck --version && \
+    cppcheck --enable=warning --force \
       --xml --xml-version=2 \
       --suppressions-list=ci-scripts/cppcheck_suppressions.list src \
       -j`nproc` \

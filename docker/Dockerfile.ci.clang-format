@@ -3,7 +3,7 @@
 # */
 #---------------------------------------------------------------------
 #
-FROM ubuntu:jammy AS nfName-clang-format-check
+FROM ubuntu:noble AS nfName-clang-format-check
 # Empty for push builds (whole-repo check); the caller passes
 # "--src-branch X --target-branch Y" for PR builds (diff-only check) --
 # checkCodingFormattingRules.sh branches on argument count, not on
@@ -16,11 +16,12 @@ RUN apt-get update && \
     apt-get install --yes \
       git \
       tree \
-      clang-format-12 && \
-    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-12 20 && \
+      clang-format-19 && \
+    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-19 20 && \
     clang-format --version
 
 WORKDIR /home
 COPY . .
 
-RUN /bin/bash -c "./ci-scripts/common/bash/checkCodingFormattingRules.sh $EXTRA_ARGS"
+RUN clang-format --version && \
+    /bin/bash -c "./ci-scripts/common/bash/checkCodingFormattingRules.sh $EXTRA_ARGS"
